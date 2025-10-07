@@ -1,0 +1,107 @@
+name: MicesCheesePantry
+
+entities:
+  Mouse:
+    authenticable: true
+    properties:
+      - name
+      - name: email
+        type: email
+      - name: role
+        type: choice
+        options:
+          values: [Forager, Connoisseur]
+        default: Forager
+    policies:
+      create:
+        - access: admin
+      read:
+        - access: restricted
+          allow: Mouse
+          condition: self
+      update:
+        - access: restricted
+          allow: Mouse
+          condition: self
+      delete:
+        - access: admin
+      signup:
+        - access: public
+
+  Cheese:
+    properties:
+      - name: name
+        type: string
+      - name: description
+        type: text
+      - name: origin
+        type: string
+      - name: photo
+        type: image
+        options:
+          sizes:
+            thumbnail:
+              width: 400
+              height: 400
+      - name: aroma
+        type: choice
+        options:
+          values: [Pungent, Mild, Earthy, Nutty]
+        default: Mild
+      - name: texture
+        type: choice
+        options:
+          values: [Soft, Hard, Creamy, Crumbly]
+        default: Hard
+    belongsTo:
+      - name: discoverer
+        entity: Mouse
+    policies:
+      create:
+        - access: restricted
+          allow: Mouse
+      read:
+        - access: public
+      update:
+        - access: restricted
+          allow: Mouse
+          condition: self
+      delete:
+        - access: restricted
+          allow: Mouse
+          condition: self
+
+  Review:
+    properties:
+      - name: rating
+        type: number
+      - name: comment
+        type: text
+    belongsTo:
+      - name: author
+        entity: Mouse
+      - name: cheese
+        entity: Cheese
+    policies:
+      create:
+        - access: restricted
+          allow: Mouse
+      read:
+        - access: public
+      update:
+        - access: restricted
+          allow: Mouse
+          condition: self
+      delete:
+        - access: restricted
+          allow: Mouse
+          condition: self
+
+
+# Health check endpoint for connection testing
+endpoints:
+  health:
+    path: /api/health
+    method: GET
+    policies: []
+    handler: healthCheck
